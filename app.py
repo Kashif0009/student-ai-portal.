@@ -61,6 +61,7 @@ authenticator = stauth.Authenticate(
 st.sidebar.title("🎓 EduPredict AI")
 menu = st.sidebar.radio("Navigation", ["Login", "Register Account"])
 
+# --- START REPLACING FROM HERE (Approx Line 65) ---
 if menu == "Register Account":
     st.title("📝 Staff Registration")
     with st.form("signup_form"):
@@ -72,23 +73,27 @@ if menu == "Register Account":
         
         if submit:
             if new_user and new_pw:
-                # FIXED: Using the most compatible hashing method for v0.3+
-                hashed_pw = stauth.Hasher.hash(new_pw)
                 try:
+                    # LINE 76-77 FIX: The "Universal" Hashing Method
+                    # We initialize the Hasher object with a list of one password
+                    hasher_obj = stauth.Hasher([new_pw]) 
+                    hashed_pw = hasher_obj.generate()[0] # This gets the hashed string
+                    
                     conn = sqlite3.connect('academic_data.db')
                     c = conn.cursor()
                     c.execute("INSERT INTO users VALUES (?,?,?,?)", (new_user, new_name, hashed_pw, role))
                     conn.commit()
                     st.success("Account created! Please switch to 'Login' in the sidebar.")
-                    # Update credentials in memory immediately
+                    
+                    # Update credentials in memory
                     credentials['usernames'][new_user] = {'name': new_name, 'password': hashed_pw}
                 except sqlite3.IntegrityError:
                     st.error("Username already exists. Please choose a different one.")
                 except Exception as e:
-                    st.error(f"Error: {e}")
+                    st.error(f"System Error: {e}")
             else:
                 st.warning("Please fill in all fields.")
-
+# --- STOP REPLACING HERE ---
 elif menu == "Login":
     # Handles session state automatically
     authenticator.login(location='main')
@@ -190,5 +195,6 @@ elif menu == "Login":
         st.error("Username/password is incorrect")
     elif st.session_state["authentication_status"] is None:
         st.info("Please login or register to access the student AI diagnostic system.")
+
 
 st.sidebar.caption("v4.2 | Secured SQLite | Advanced Analytics")
