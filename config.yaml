@@ -1,0 +1,10 @@
+credentials:
+  usernames:
+    kashif0009:
+      email: kashifofficial8833@gmail.com
+      first_name: Kashif
+      last_name: Khan
+      logged_in: false
+      password: $2b$12$tl/h7JYLImlB4WQXW/CgEeuKa1JqMneS/05eT96hB3W6cCWh9Zity
+      password_hint: just my name
+      roles: null
